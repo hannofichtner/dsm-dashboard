@@ -146,6 +146,7 @@
   <th>DSM/CLI Time</th>
   <th>DSM/CLI High</th>
   <th>Reliable Max</th>
+  <th>RM DWH</th>
   <th>Elim Bucket</th>
   <th>Max Known</th>
   <th>Edge @Rpt</th>
@@ -381,6 +382,9 @@ function renderRows() {
     }
     html += '<td>' + reliableLabel + '</td>';
 
+    // DWH Reliable Max
+    html += '<td class="muted">' + (st.dwh_reliable_max != null ? st.dwh_reliable_max + '\u00b0F' : '') + '</td>';
+
     // Eliminated bucket (directly below reliable_max) — shows YES ask
     // Low YES ask = market already priced it as eliminated (good)
     // High YES ask = market hasn't caught up yet (opportunity for NO bet)
@@ -464,4 +468,3 @@ setInterval(() => { if (isToday) fetchData(); }, 30000);
 </script>
 </body>
 </html>
-<!-- build trigger -->
