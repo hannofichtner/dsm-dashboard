@@ -146,7 +146,6 @@
   <th>DSM/CLI Time</th>
   <th>DSM/CLI High</th>
   <th>Reliable Max</th>
-  <th>RM DWH</th>
   <th>Elim Bucket</th>
   <th>Max Known</th>
   <th>Edge @Rpt</th>
@@ -382,8 +381,6 @@ function renderRows() {
     }
     html += '<td>' + reliableLabel + '</td>';
 
-    // DWH Reliable Max
-    html += '<td class="muted">' + (st.dwh_reliable_max != null ? st.dwh_reliable_max + '\u00b0F' : '') + '</td>';
 
     // Eliminated bucket (directly below reliable_max) — shows YES ask
     // Low YES ask = market already priced it as eliminated (good)
