@@ -246,17 +246,31 @@ function profitFmt(v) {
 }
 
 function fmtDsmTime(raw, tz) {
-  // raw is ISO like "2026-03-18T22:07" or "HH:MM UTC"
+  // Show times in LST (= standard time, no DST adjustment)
+  // Standard time zone IDs: use the fixed-offset equivalent
   if (!raw) return '';
   try {
-    // Try ISO format
     if (raw.includes('T')) {
-      const d = new Date(raw + 'Z');  // treat as UTC
-      return d.toLocaleString('en-US', {
+      const d = new Date(raw + (raw.endsWith('Z') ? '' : 'Z'));
+      // Get wall clock in the city's tz
+      const wall = d.toLocaleString('en-US', {
         timeZone: tz || 'UTC',
-        month: '2-digit', day: '2-digit',
         hour: 'numeric', minute: '2-digit', hour12: true
       });
+      // Check if DST is active by comparing offsets
+      const jan = new Date(d.getFullYear(), 0, 1);
+      const janOff = new Date(jan.toLocaleString('en-US', {timeZone: tz})).getTime() - jan.getTime();
+      const curOff = new Date(d.toLocaleString('en-US', {timeZone: tz})).getTime() - d.getTime();
+      const isDST = curOff !== janOff;
+      if (isDST) {
+        // Subtract 1 hour for LST
+        const lstDate = new Date(d.getTime() - 3600000);
+        return lstDate.toLocaleString('en-US', {
+          timeZone: tz,
+          hour: 'numeric', minute: '2-digit', hour12: true
+        }).replace(/ AM/, 'a').replace(/ PM/, 'p');
+      }
+      return wall.replace(/ AM/, 'a').replace(/ PM/, 'p');
     }
     return raw;
   } catch(e) { return raw; }
@@ -450,8 +464,20 @@ function fetchData() {
           })
           .catch(e => console.error('History fetch error:', e));
       }
-      document.getElementById('last-update').textContent =
-        'Updated: ' + new Date().toLocaleTimeString();
+      // Show updated time in both wall clock (local) and LST
+      const _now = new Date();
+      const _wallStr = _now.toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit', hour12: true});
+      // Detect DST: compare Jan offset to current offset
+      const _janOff = new Date(_now.getFullYear(), 0, 1).getTimezoneOffset();
+      const _curOff = _now.getTimezoneOffset();
+      const _isDST = _curOff < _janOff;
+      let _updateStr = 'Updated: ' + _wallStr;
+      if (_isDST) {
+        const _lstNow = new Date(_now.getTime() + (_janOff - _curOff) * 60000);
+        const _lstStr = _lstNow.toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit', hour12: true});
+        _updateStr += ' / ' + _lstStr + ' LST';
+      }
+      document.getElementById('last-update').textContent = _updateStr;
     })
     .catch(e => console.error('Fetch error:', e));
 }
