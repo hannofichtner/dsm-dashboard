@@ -146,7 +146,7 @@
   <th>DSM/CLI/6 High</th>
   <th>Reliable Max</th>
   <th>Elim Bucket</th>
-  <th>Max Known</th>
+  <th>Wethr High</th>
   <th>Edge @Rpt</th>
   <th>Ask @Rpt</th>
   <th>Bucket + Ask</th>
@@ -404,7 +404,7 @@ function renderRows() {
     }
     html += '<td class="muted">' + elimLabel + '</td>';
 
-    html += '<td>' + (st.max_known != null ? st.max_known + '\u00b0F' : '') + '</td>';
+    html += '<td>' + (st.wethr_high != null ? st.wethr_high + '\u00b0F' : (st.max_known != null ? st.max_known + '\u00b0F' : '')) + '</td>';
 
     // Edge @report, @bet
     html += '<td>' + edgeFmt(edgeReport) + '</td>';
