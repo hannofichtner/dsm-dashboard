@@ -148,7 +148,6 @@
   <th>Elim Bucket</th>
   <th>Wethr High</th>
   <th>Edge @Rpt</th>
-  <th>Ask @Rpt</th>
   <th>Bucket + Ask</th>
   <th>Cost</th>
   <th>Value</th>
@@ -408,7 +407,6 @@ function renderRows() {
 
     // Edge @report, @bet
     html += '<td>' + edgeFmt(edgeReport) + '</td>';
-    html += '<td>' + (st.ask_at_report != null ? st.ask_at_report + '\u00a2' : '') + '</td>';
 
     // Bucket + ask
     html += '<td class="muted">' + bucketAsk + '</td>';
