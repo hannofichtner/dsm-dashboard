@@ -148,6 +148,7 @@
   <th>Reliable Max</th>
   <th>Elim Bucket</th>
   <th>Wethr High</th>
+  <th>2min High</th>
   <th>Edge @Rpt</th>
   <th>Bucket + Ask</th>
   <th>Cost</th>
@@ -409,6 +410,9 @@ function renderRows() {
     html += '<td class="muted">' + elimLabel + '</td>';
 
     html += '<td>' + (st.wethr_high != null ? st.wethr_high + '\u00b0F' : (st.max_known != null ? st.max_known + '\u00b0F' : '')) + '</td>';
+
+    // 2min High
+    html += '<td>' + (st.two_min_high != null ? st.two_min_high + '\u00b0F' : '') + '</td>';
 
     // Edge @report, @bet
     html += '<td>' + edgeFmt(edgeReport) + '</td>';
