@@ -57,6 +57,13 @@
     width: 100%; border-collapse: collapse; white-space: nowrap;
     font-size: 12px;
   }
+  /* Sticky city column */
+  td:first-child, th:first-child {
+    position: sticky; left: 0; z-index: 2;
+    background: #0f1117;
+  }
+  th:first-child { background: #1f2335; z-index: 3; }
+  tr:hover td:first-child { background: #1a1d27; }
   th {
     background: #1f2335; color: #8892a4; font-size: 10px; font-weight: 600;
     text-transform: uppercase; letter-spacing: .5px;
@@ -140,13 +147,9 @@
   <th>LST</th>
   <th>Trading</th>
   <th>Required Cutoff LST (D+1)</th>
-  <th>Decl Only</th>
   <th>Avg Win%</th>
-  <th>NWS Decl</th>
-  <th>DSM/CLI/6 Time</th>
-  <th>DSM/CLI/6 High</th>
+  <th>DSM/CLI/6</th>
   <th>Reliable Max</th>
-  <th>Elim Bucket</th>
   <th>Wethr High</th>
   <th>2min High</th>
   <th>Edge @Rpt</th>
@@ -164,8 +167,8 @@
 
 <script>
 const CITIES = [{"code": "LAX", "tz": "America/Los_Angeles"}, {"code": "SEA", "tz": "America/Los_Angeles"}, {"code": "MIA", "tz": "America/New_York"}, {"code": "CHI", "tz": "America/Chicago"}, {"code": "ATL", "tz": "America/New_York"}, {"code": "NYC", "tz": "America/New_York"}, {"code": "HOU", "tz": "America/Chicago"}, {"code": "AUS", "tz": "America/Chicago"}, {"code": "DCA", "tz": "America/New_York"}, {"code": "PHX", "tz": "America/Phoenix"}, {"code": "DEN", "tz": "America/Denver"}, {"code": "BOS", "tz": "America/New_York"}, {"code": "PHL", "tz": "America/New_York"}, {"code": "LAS", "tz": "America/Los_Angeles"}, {"code": "SFO", "tz": "America/Los_Angeles"}, {"code": "OKC", "tz": "America/Chicago"}, {"code": "DFW", "tz": "America/Chicago"}, {"code": "NOL", "tz": "America/Chicago"}, {"code": "MSP", "tz": "America/Chicago"}, {"code": "SAT", "tz": "America/Chicago"}];
-const WIN_RATES = {"ATL": {"15": {"all": 0.7895, "declining": 0.7895, "pct_declining": 0.97, "n_days": 2152, "n_declining": 2087}, "16": {"all": 0.8757, "declining": 0.8757, "pct_declining": 0.97, "n_days": 2115, "n_declining": 2051}, "17": {"all": 0.9322, "declining": 0.9322, "pct_declining": 0.97, "n_days": 59, "n_declining": 57}}, "AUS": {"15": {"all": 0.7881, "declining": 0.7881, "pct_declining": 0.97, "n_days": 2020, "n_declining": 1959}, "16": {"all": 0.9568, "declining": 0.9568, "pct_declining": 0.97, "n_days": 3217, "n_declining": 3120}}, "BOS": {"15": {"all": 0.8688, "declining": 0.8688, "pct_declining": 0.97, "n_days": 3162, "n_declining": 3067}, "16": {"all": 0.9126, "declining": 0.9126, "pct_declining": 0.97, "n_days": 3194, "n_declining": 3098}, "17": {"all": 0.9207, "declining": 0.9207, "pct_declining": 0.97, "n_days": 2081, "n_declining": 2018}, "19": {"all": 0.9597, "declining": 0.9597, "pct_declining": 0.97, "n_days": 3149, "n_declining": 3054}}, "DCA": {"12": {"all": 0.3342, "declining": 0.3342, "pct_declining": 0.97, "n_days": 3324, "n_declining": 3224}, "16": {"all": 0.9402, "declining": 0.9402, "pct_declining": 0.97, "n_days": 3310, "n_declining": 3210}, "17": {"all": 0.9509, "declining": 0.9509, "pct_declining": 0.97, "n_days": 2139, "n_declining": 2074}}, "DEN": {"15": {"all": 0.8842, "declining": 0.8842, "pct_declining": 0.97, "n_days": 2029, "n_declining": 1968}, "16": {"all": 0.9914, "declining": 0.9914, "pct_declining": 0.97, "n_days": 3368, "n_declining": 3266}}, "DFW": {"15": {"all": 0.7838, "declining": 0.7838, "pct_declining": 0.97, "n_days": 3132, "n_declining": 3038}, "16": {"all": 0.9445, "declining": 0.9445, "pct_declining": 0.97, "n_days": 3223, "n_declining": 3126}, "18": {"all": 0.9908, "declining": 0.9908, "pct_declining": 0.97, "n_days": 3142, "n_declining": 3047}}, "HOU": {"15": {"all": 0.8193, "declining": 0.8193, "pct_declining": 0.97, "n_days": 3299, "n_declining": 3200}, "16": {"all": 0.9333, "declining": 0.9333, "pct_declining": 0.97, "n_days": 3342, "n_declining": 3241}}, "LAX": {"9": {"all": 0.1695, "declining": 0.1695, "pct_declining": 0.97, "n_days": 3340, "n_declining": 3239}, "14": {"all": 0.9549, "declining": 0.9549, "pct_declining": 0.97, "n_days": 1442, "n_declining": 1398}, "15": {"all": 0.9872, "declining": 0.9872, "pct_declining": 0.97, "n_days": 3359, "n_declining": 3258}, "17": {"all": 0.992, "declining": 0.992, "pct_declining": 0.97, "n_days": 3360, "n_declining": 3259}}, "MIA": {"12": {"all": 0.7353, "declining": 0.7353, "pct_declining": 0.97, "n_days": 3283, "n_declining": 3184}, "15": {"all": 0.969, "declining": 0.969, "pct_declining": 0.97, "n_days": 3258, "n_declining": 3160}, "16": {"all": 0.9902, "declining": 0.9902, "pct_declining": 0.97, "n_days": 3280, "n_declining": 3181}}, "MSP": {"15": {"all": 0.8088, "declining": 0.8088, "pct_declining": 0.97, "n_days": 3258, "n_declining": 3160}, "16": {"all": 0.9166, "declining": 0.9166, "pct_declining": 0.97, "n_days": 3272, "n_declining": 3173}, "18": {"all": 0.9629, "declining": 0.9629, "pct_declining": 0.97, "n_days": 3258, "n_declining": 3160}, "19": {"all": 0.9759, "declining": 0.9759, "pct_declining": 0.97, "n_days": 2327, "n_declining": 2257}}, "NYC": {"15": {"all": 0.8959, "declining": 0.8959, "pct_declining": 0.97, "n_days": 3140, "n_declining": 3045}, "16": {"all": 0.9375, "declining": 0.9375, "pct_declining": 0.97, "n_days": 3233, "n_declining": 3136}}, "PHL": {"8": {"all": 0.0829, "declining": 0.0829, "pct_declining": 0.97, "n_days": 2836, "n_declining": 2750}, "12": {"all": 0.3699, "declining": 0.3699, "pct_declining": 0.97, "n_days": 3358, "n_declining": 3257}, "15": {"all": 0.842, "declining": 0.842, "pct_declining": 0.97, "n_days": 367, "n_declining": 355}, "16": {"all": 0.9441, "declining": 0.9441, "pct_declining": 0.97, "n_days": 3205, "n_declining": 3108}, "17": {"all": 0.9516, "declining": 0.9516, "pct_declining": 0.97, "n_days": 2107, "n_declining": 2043}}, "SAT": {"15": {"all": 0.7026, "declining": 0.7026, "pct_declining": 0.97, "n_days": 2172, "n_declining": 2106}, "16": {"all": 0.9362, "declining": 0.9362, "pct_declining": 0.97, "n_days": 3214, "n_declining": 3117}, "17": {"all": 0.991, "declining": 0.991, "pct_declining": 0.97, "n_days": 3345, "n_declining": 3244}}, "SEA": {"15": {"all": 0.9088, "declining": 0.9088, "pct_declining": 0.97, "n_days": 3335, "n_declining": 3234}, "17": {"all": 0.9634, "declining": 0.9634, "pct_declining": 0.97, "n_days": 3225, "n_declining": 3128}}, "CHI": {"15": {"all": 0.7003, "declining": 0.848, "pct_declining": 0.5387, "n_days": 2933, "n_declining": 1579}, "16": {"all": 0.8592, "declining": 0.8759, "pct_declining": 0.9676, "n_days": 2933, "n_declining": 2836}}, "PHX": {"16": {"all": 0.8746, "declining": 0.8956, "pct_declining": 0.2905, "n_days": 3102, "n_declining": 900}, "17": {"all": 0.9739, "declining": 0.9733, "pct_declining": 0.9687, "n_days": 3102, "n_declining": 3001}}, "LAS": {"16": {"all": 0.8272, "declining": 0.9209, "pct_declining": 0.5558, "n_days": 2870, "n_declining": 1593}, "17": {"all": 0.9439, "declining": 0.9425, "pct_declining": 0.9651, "n_days": 2870, "n_declining": 2766}}, "SFO": {"16": {"all": 0.9347, "declining": 0.9411, "pct_declining": 0.9389, "n_days": 2985, "n_declining": 2799}, "17": {"all": 0.9739, "declining": 0.9753, "pct_declining": 0.9648, "n_days": 2985, "n_declining": 2876}}, "OKC": {"15": {"all": 0.4989, "declining": 0.6989, "pct_declining": 0.3761, "n_days": 3111, "n_declining": 1169}, "16": {"all": 0.7814, "declining": 0.7847, "pct_declining": 0.9772, "n_days": 3111, "n_declining": 3037}, "17": {"all": 0.929, "declining": 0.9328, "pct_declining": 0.9772, "n_days": 3111, "n_declining": 3037}}, "NOL": {"15": {"all": 0.7313, "declining": 0.8133, "pct_declining": 0.7065, "n_days": 3141, "n_declining": 2217}, "16": {"all": 0.8918, "declining": 0.8936, "pct_declining": 0.9939, "n_days": 3141, "n_declining": 3119}}};
-const DSM_CUTOFFS = {"ATL": [15, 16, 17], "AUS": [15, 16], "BOS": [15, 16, 17, 19], "CHI": [12, 15, 16], "DCA": [12, 16, 17], "DEN": [15, 16], "DFW": [15, 16, 18], "HOU": [15, 16], "LAX": [9, 14, 15, 17], "LAS": [10, 16, 17], "MIA": [12, 15, 16], "MSP": [15, 16, 18, 19], "NOL": [12, 15, 16], "NYC": [15, 16], "OKC": [12, 15, 16, 17], "PHL": [12, 15, 16, 17], "PHX": [11, 16, 17], "SAT": [15, 16, 17], "SEA": [15, 17], "SFO": [10, 16, 17]};
+const WIN_RATES = {"ATL": {"15": {"all": 0.7895, "declining": 0.7895, "pct_declining": 0.97, "n_days": 2152, "n_declining": 2087}, "16": {"all": 0.8757, "declining": 0.8757, "pct_declining": 0.97, "n_days": 2115, "n_declining": 2051}, "17": {"all": 0.9322, "declining": 0.9322, "pct_declining": 0.97, "n_days": 59, "n_declining": 57}}, "AUS": {"15": {"all": 0.7881, "declining": 0.7881, "pct_declining": 0.97, "n_days": 2020, "n_declining": 1959}, "16": {"all": 0.9568, "declining": 0.9568, "pct_declining": 0.97, "n_days": 3217, "n_declining": 3120}}, "BOS": {"15": {"all": 0.8688, "declining": 0.8688, "pct_declining": 0.97, "n_days": 3162, "n_declining": 3067}, "16": {"all": 0.9126, "declining": 0.9126, "pct_declining": 0.97, "n_days": 3194, "n_declining": 3098}, "17": {"all": 0.9207, "declining": 0.9207, "pct_declining": 0.97, "n_days": 2081, "n_declining": 2018}, "19": {"all": 0.9597, "declining": 0.9597, "pct_declining": 0.97, "n_days": 3149, "n_declining": 3054}}, "DCA": {"12": {"all": 0.3342, "declining": 0.3342, "pct_declining": 0.97, "n_days": 3324, "n_declining": 3224}, "16": {"all": 0.9402, "declining": 0.9402, "pct_declining": 0.97, "n_days": 3310, "n_declining": 3210}, "17": {"all": 0.9509, "declining": 0.9509, "pct_declining": 0.97, "n_days": 2139, "n_declining": 2074}}, "DEN": {"15": {"all": 0.8842, "declining": 0.8842, "pct_declining": 0.97, "n_days": 2029, "n_declining": 1968}, "16": {"all": 0.9914, "declining": 0.9914, "pct_declining": 0.97, "n_days": 3368, "n_declining": 3266}}, "DFW": {"15": {"all": 0.7838, "declining": 0.7838, "pct_declining": 0.97, "n_days": 3132, "n_declining": 3038}, "16": {"all": 0.9445, "declining": 0.9445, "pct_declining": 0.97, "n_days": 3223, "n_declining": 3126}, "18": {"all": 0.9908, "declining": 0.9908, "pct_declining": 0.97, "n_days": 3142, "n_declining": 3047}}, "HOU": {"15": {"all": 0.8193, "declining": 0.8193, "pct_declining": 0.97, "n_days": 3299, "n_declining": 3200}, "16": {"all": 0.9333, "declining": 0.9333, "pct_declining": 0.97, "n_days": 3342, "n_declining": 3241}}, "LAX": {"9": {"all": 0.1695, "declining": 0.1695, "pct_declining": 0.97, "n_days": 3340, "n_declining": 3239}, "14": {"all": 0.9549, "declining": 0.9549, "pct_declining": 0.97, "n_days": 1442, "n_declining": 1398}, "15": {"all": 0.9872, "declining": 0.9872, "pct_declining": 0.97, "n_days": 3359, "n_declining": 3258}, "17": {"all": 0.992, "declining": 0.992, "pct_declining": 0.97, "n_days": 3360, "n_declining": 3259}}, "MIA": {"12": {"all": 0.7353, "declining": 0.7353, "pct_declining": 0.97, "n_days": 3283, "n_declining": 3184}, "15": {"all": 0.969, "declining": 0.969, "pct_declining": 0.97, "n_days": 3258, "n_declining": 3160}, "16": {"all": 0.9902, "declining": 0.9902, "pct_declining": 0.97, "n_days": 3280, "n_declining": 3181}}, "MSP": {"15": {"all": 0.8088, "declining": 0.8088, "pct_declining": 0.97, "n_days": 3258, "n_declining": 3160}, "16": {"all": 0.9166, "declining": 0.9166, "pct_declining": 0.97, "n_days": 3272, "n_declining": 3173}, "18": {"all": 0.9629, "declining": 0.9629, "pct_declining": 0.97, "n_days": 3258, "n_declining": 3160}, "19": {"all": 0.9759, "declining": 0.9759, "pct_declining": 0.97, "n_days": 2327, "n_declining": 2257}}, "NYC": {"15": {"all": 0.8959, "declining": 0.8959, "pct_declining": 0.97, "n_days": 3140, "n_declining": 3045}, "16": {"all": 0.9375, "declining": 0.9375, "pct_declining": 0.97, "n_days": 3233, "n_declining": 3136}}, "PHL": {"8": {"all": 0.0829, "declining": 0.0829, "pct_declining": 0.97, "n_days": 2836, "n_declining": 2750}, "12": {"all": 0.3699, "declining": 0.3699, "pct_declining": 0.97, "n_days": 3358, "n_declining": 3257}, "15": {"all": 0.842, "declining": 0.842, "pct_declining": 0.97, "n_days": 367, "n_declining": 355}, "16": {"all": 0.9441, "declining": 0.9441, "pct_declining": 0.97, "n_days": 3205, "n_declining": 3108}, "17": {"all": 0.9516, "declining": 0.9516, "pct_declining": 0.97, "n_days": 2107, "n_declining": 2043}}, "SAT": {"15": {"all": 0.7026, "declining": 0.7026, "pct_declining": 0.97, "n_days": 2172, "n_declining": 2106}, "16": {"all": 0.9362, "declining": 0.9362, "pct_declining": 0.97, "n_days": 3214, "n_declining": 3117}, "17": {"all": 0.991, "declining": 0.991, "pct_declining": 0.97, "n_days": 3345, "n_declining": 3244}}, "SEA": {"15": {"all": 0.9088, "declining": 0.9088, "pct_declining": 0.97, "n_days": 3335, "n_declining": 3234}, "17": {"all": 0.9634, "declining": 0.9634, "pct_declining": 0.97, "n_days": 3225, "n_declining": 3128}}, "CHI": {"16": {"all": 0.9018, "declining": 0.9018, "pct_declining": 0.97, "n_days": 3359, "n_declining": 3258}}, "PHX": {"16": {"all": 0.9902, "declining": 0.9902, "pct_declining": 0.97, "n_days": 3371, "n_declining": 3269}, "17": {"all": 0.9935, "declining": 0.9935, "pct_declining": 0.97, "n_days": 3371, "n_declining": 3269}}, "LAS": {"16": {"all": 0.9743, "declining": 0.9743, "pct_declining": 0.97, "n_days": 3352, "n_declining": 3251}, "17": {"all": 0.9744, "declining": 0.9744, "pct_declining": 0.97, "n_days": 2184, "n_declining": 2118}}, "SFO": {"16": {"all": 0.9626, "declining": 0.9626, "pct_declining": 0.97, "n_days": 3343, "n_declining": 3242}, "17": {"all": 0.9819, "declining": 0.9819, "pct_declining": 0.97, "n_days": 2155, "n_declining": 2090}}, "OKC": {"16": {"all": 0.8647, "declining": 0.8647, "pct_declining": 0.97, "n_days": 1937, "n_declining": 1878}, "17": {"all": 0.9925, "declining": 0.9925, "pct_declining": 0.97, "n_days": 3342, "n_declining": 3241}}, "NOL": {"16": {"all": 0.901, "declining": 0.901, "pct_declining": 0.97, "n_days": 1252, "n_declining": 1214}}};
+const DSM_CUTOFFS = {"ATL": [15, 16, 17], "AUS": [15, 16], "BOS": [15, 16, 17, 19], "CHI": [16], "DCA": [16, 17], "DEN": [15, 16], "DFW": [15, 16, 18], "HOU": [15, 16], "LAX": [9, 14, 15, 17], "LAS": [16, 17], "MIA": [12, 15, 16], "MSP": [15, 16, 18, 19], "NOL": [16], "NYC": [15, 16], "OKC": [16, 17], "PHL": [16, 17], "PHX": [16, 17], "SAT": [15, 16, 17], "SEA": [15, 17], "SFO": [16, 17]};
 const CUTOFF_LABELS = {"ATL": {"12": "12:52p"}, "AUS": {"11": "11:53a"}, "BOS": {"12": "12:54p"}, "DCA": {"12": "12:52p"}, "DEN": {"10": "10:53a"}, "DFW": {"11": "11:53a"}, "HOU": {"11": "11:53a"}, "LAX": {"9": "9:53a", "15": "3:53p"}, "LAS": {"9": "9:56a", "15": "3:56p"}, "MIA": {"12": "12:53p"}, "MSP": {"11": "11:53a"}, "NOL": {"11": "11:53a"}, "NYC": {"12": "12:51p"}, "OKC": {"11": "11:52a"}, "PHL": {"12": "12:54p"}, "PHX": {"10": "10:53a"}, "SAT": {"11": "11:51a"}, "SEA": {"15": "3:53p"}, "SFO": {"9": "9:56a", "15": "3:56p"}};
 
 let viewDate = new Date();
@@ -355,61 +358,27 @@ function renderRows() {
     }
     html += '</div></td>';
 
-    // Declining only toggle
-    html += '<td><label class="toggle"><input type="checkbox" ' +
-      (requireDecl ? 'checked' : '') +
-      ' onchange="toggle(\'' + c.code + '\',\'require_declining\',this.checked)">' +
-      '<span class="slider"></span></label></td>';
-
     // Avg win prob
     html += '<td class="' + winClass(avgWin) + '">' + pct(avgWin) + '</td>';
 
-    // MOS declining
-    html += '<td>' + mosDeclLabel(st.mos_declining) + '</td>';
-
-    // DSM time, high (with effective cutoff indicator), max known
-    html += '<td class="muted">' + fmtDsmTime(st.dsm_time, c.tz) + '</td>';
-    let dsmHighLabel = '';
+    // DSM/CLI/6 combined: high + time in brackets
+    let dsmLabel = '';
     if (st.dsm_high != null) {
-      // Show the cutoff the high came from — use effective_cutoff if set, else req_cutoff
       const cutoffUsed = st.effective_cutoff || reqCutoff;
-      const ecLabel = cutoffUsed > 12 ? (cutoffUsed - 12) + 'PM' : cutoffUsed + 'AM';
-      dsmHighLabel = st.dsm_high + '\u00b0F (' + ecLabel + ')';
+      const ecLabel = cutoffUsed > 12 ? (cutoffUsed - 12) + 'p' : cutoffUsed + 'a';
+      const timeStr = fmtDsmTime(st.dsm_time, c.tz);
+      dsmLabel = st.dsm_high + '\u00b0F (' + ecLabel + (timeStr ? ' ' + timeStr : '') + ')';
     }
-    html += '<td>' + dsmHighLabel + '</td>';
+    html += '<td>' + dsmLabel + '</td>';
 
-    // Reliable max (from DSM/CLI/6hr METAR only)
+    // Reliable max
     let reliableLabel = '';
     if (st.reliable_max != null) {
       reliableLabel = st.reliable_max + '\u00b0F';
-      if (st.newest_cutoff_time) {
-        // Show cutoff time in the CITY's local time (not browser TZ).
-        // The ISO string already has the city's offset, so parse HH:MM directly.
-        try {
-          const m = st.newest_cutoff_time.match(/T(\d{2}):(\d{2})/);
-          if (m) {
-            let hh = parseInt(m[1]);
-            const mm = m[2];
-            const ampm = hh >= 12 ? 'PM' : 'AM';
-            const h12 = hh > 12 ? hh - 12 : (hh === 0 ? 12 : hh);
-            reliableLabel += ' (' + h12 + ':' + mm + ampm + ')';
-          }
-        } catch(e) {}
-      }
     }
     html += '<td>' + reliableLabel + '</td>';
 
-
-    // Eliminated bucket (directly below reliable_max) — shows YES ask
-    // Low YES ask = market already priced it as eliminated (good)
-    // High YES ask = market hasn't caught up yet (opportunity for NO bet)
-    let elimLabel = '';
-    if (st.elim_bucket_range && st.elim_bucket_yes_ask != null) {
-      elimLabel = st.elim_bucket_range + ' YES@' + st.elim_bucket_yes_ask + '\u00a2';
-    }
-    html += '<td class="muted">' + elimLabel + '</td>';
-
-    html += '<td>' + (st.wethr_high != null ? st.wethr_high + '\u00b0F' : (st.max_known != null ? st.max_known + '\u00b0F' : '')) + '</td>';
+    html += '<td>' + (st.wethr_high != null ? st.wethr_high + '\u00b0F' : '') + '</td>';
 
     // 2min High
     html += '<td>' + (st.two_min_high != null ? st.two_min_high + '\u00b0F' : '') + '</td>';
